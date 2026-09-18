@@ -9,10 +9,10 @@ public class Rot13{
     'M', 'N', 'Ñ', 'O', 'Ó', 'Ò', 'P', 'Q', 'R', 'S', 
     'T', 'U', 'Ú', 'Ù', 'Ü', 'V', 'W', 'X', 'Y', 'Z'};
 
-    public static char desplaçar(char c, int despaçament) {
+    public static char desplaçar(char c, int desplaçament) {
         for (int i = 0; i < minuscules.length; i++) {
             if (minuscules[i] == c) {
-                int nouIndex = (i + despaçament) % minuscules.length;
+                int nouIndex = (i + desplaçament) % minuscules.length;
                 if (nouIndex < 0) {
                     nouIndex+= minuscules.length;
                 }
@@ -22,7 +22,7 @@ public class Rot13{
 
         for (int i = 0; i < majuscules.length; i++) {
             if (majuscules[i] == c) {
-                int nouIndex = (i + despaçament) % majuscules.length;
+                int nouIndex = (i + desplaçament) % majuscules.length;
                 if (nouIndex < 0) {
                     nouIndex+= majuscules.length;
                 }
@@ -66,7 +66,7 @@ public class Rot13{
         System.out.println("---------");
         for (String p : proves) {
             String xifrat = xifraRot13(p);
-            System.out.println(p + " => " + desxifraRot13(p));
+            System.out.println(xifrat + " => " + desxifraRot13(xifrat));
         }
 
     }
