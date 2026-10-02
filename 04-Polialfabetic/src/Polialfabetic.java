@@ -9,7 +9,7 @@ public class Polialfabetic {
     'T', 'U', 'Ú', 'Ù', 'Ü', 'V', 'W', 'X', 'Y', 'Z'};
     private static final long clauSecreta = 72383;
     private static char[] alfabetpermutat;
-    private static Random clauXifrada;
+    private static Random generadorPermutacions;
     public static void main(String[] args) {
         String msgs[] = {"Test 01 àrbritre, coixí, Perímetre",
             "Test 02 Taüll, DÍA, año",
@@ -31,14 +31,14 @@ public class Polialfabetic {
         }
     }
     public static void initRandom(long clauSecreta) {
-        clauXifrada = new Random(clauSecreta);
+       generadorPermutacions = new Random(clauSecreta);
     }
     public static char[] permutarAlfabet(char[] alfabet) {
         ArrayList<Character> llista = new ArrayList<>();
         for (int i = 0; i < alfabet.length; i++) {
             llista.add(alfabet[i]);
         }
-        Collections.shuffle(llista, clauXifrada);
+        Collections.shuffle(llista, generadorPermutacions);
         char[] permutat = new char[alfabet.length];
         for (int i = 0; i < llista.size(); i++) {
             permutat[i] = llista.get(i);
