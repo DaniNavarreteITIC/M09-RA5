@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class XifradorPolialfabetic {
+public class XifradorPolialfabetic implements Xifrador{
     public char[] alfabet = {'A', 'Á', 'À', 'B', 'C', 'Ç', 'D', 'E', 'É', 'È', 
     'F', 'G', 'H', 'I', 'Í', 'Ì', 'Ï', 'J', 'K', 'L', 
     'M', 'N', 'Ñ', 'O', 'Ó', 'Ò', 'P', 'Q', 'R', 'S', 
@@ -11,24 +11,14 @@ public class XifradorPolialfabetic {
     private static final long clauSecreta = 72383;
     private char[] alfabetpermutat;
     private Random generadorPermutacions;
-    public void main(String[] args) {
-        String msgs[] = {"Test 01 àrbritre, coixí, Perímetre",
-            "Test 02 Taüll, DÍA, año",
-            "Test 03 Peça, Òrrius, Bòvila"};
-        String msgsXifrats[] = new String[msgs.length];
-    
-        System.out.println("Xifratge:\n--------");
-        for (int i = 0; i < msgs.length; i++) {
-            initRandom(clauSecreta);
-            msgsXifrats[i] = xifraPoliAlfa(msgs[i]);
-            System.out.printf("%-34s -> %s%n", msgs[i], msgsXifrats[i]);
-        }
-    
-        System.out.println("Desxifratge:\n--------");
-        for (int i = 0; i < msgs.length; i++) {
-            initRandom(clauSecreta);
-            String msg = desxifraPoliAlfa(msgsXifrats[i]);
-            System.out.printf("%-34s -> %s%n", msgsXifrats[i], msg);
+    private long validaClau(String clau) throws ClauNoSuportada {
+        try {
+            if (clau == null) {
+                throw new ClauNoSuportada("La clau per xifrat Polialfabètic no pot ser null");
+            }
+            return Long.parseLong(clau);
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("La clau per xifrat Polialfabètic ha de ser un String convertible a long");
         }
     }
     public void initRandom(long clauSecreta) {
@@ -48,32 +38,42 @@ public class XifradorPolialfabetic {
     }
 
 
-    public String xifraPoliAlfa(String msg) {
-        String msgXifrat = "";
+    @Override
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada {
+        long llavor = validaClau(clau);
+        initRandom(llavor);
+        
+        StringBuilder msgXifrat = new StringBuilder();
         for (int i = 0; i < msg.length(); i++) {
             alfabetpermutat = permutarAlfabet(alfabet);
             boolean esMinuscula = Character.isLowerCase(msg.charAt(i));
             char lletraMajuscula = Character.toUpperCase(msg.charAt(i));
             boolean trobada = false;
-            for (int j = 0; j <alfabet.length; j++) {
+            for (int j = 0; j < alfabet.length; j++) {
                 if (lletraMajuscula == alfabet[j]) {
                     char lletraXifrada = alfabetpermutat[j];
                     if (esMinuscula) {
                         lletraXifrada = Character.toLowerCase(lletraXifrada);
                     }
-                    msgXifrat += lletraXifrada;
+                    msgXifrat.append(lletraXifrada);
                     trobada = true;
                     break;
                 }
             }
             if (!trobada) {
-                msgXifrat += msg.charAt(i);
+                msgXifrat.append(msg.charAt(i));
             }
         }
-        return msgXifrat;
+        return new TextXifrat(msgXifrat.toString().getBytes());
     }
-    public String desxifraPoliAlfa(String msgXifrat) {
-        String msgDesxifat = "";
+    @Override
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada {
+        long llavor = validaClau(clau);
+        if (xifrat == null) return null;
+        initRandom(llavor);
+        
+        String msgXifrat = new String(xifrat.getBytes());
+        StringBuilder msgDesxifat = new StringBuilder();
         for (int i = 0; i < msgXifrat.length(); i++) {
             alfabetpermutat = permutarAlfabet(alfabet);
             boolean esMinuscula = Character.isLowerCase(msgXifrat.charAt(i));
@@ -85,16 +85,15 @@ public class XifradorPolialfabetic {
                     if (esMinuscula) {
                         lletraDesxifrada = Character.toLowerCase(lletraDesxifrada);
                     }
-                    msgDesxifat += lletraDesxifrada;
+                    msgDesxifat.append(lletraDesxifrada);
                     trobada = true;
                     break;
                 }
             }
             if (!trobada) {
-                msgDesxifat += msgXifrat.charAt(i);
+                msgDesxifat.append(msgXifrat.charAt(i));
             }
         }
-        return msgDesxifat; 
+        return msgDesxifat.toString();
     }
-
 }

@@ -1,6 +1,6 @@
 package iticbcn.xifratge;
 
-public class XifradorRotX {
+public class XifradorRotX implements Xifrador{
     public char[] minuscules = { 'a', 'á', 'à', 'b', 'c', 'ç', 'd', 'e', 'é', 'è', 
     'f', 'g', 'h', 'i', 'í', 'ì', 'ï', 'j', 'k', 'l', 
     'm', 'n', 'ñ', 'o', 'ó', 'ò', 'p', 'q', 'r', 's', 
@@ -10,6 +10,21 @@ public class XifradorRotX {
     'F', 'G', 'H', 'I', 'Í', 'Ì', 'Ï', 'J', 'K', 'L', 
     'M', 'N', 'Ñ', 'O', 'Ó', 'Ò', 'P', 'Q', 'R', 'S', 
     'T', 'U', 'Ú', 'Ù', 'Ü', 'V', 'W', 'X', 'Y', 'Z'};
+
+    private int validaClau(String clau) throws ClauNoSuportada {
+        try {
+            if (clau == null) {
+                throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+            }
+            int k = Integer.parseInt(clau);
+            if (k < 0 || k > 40) {
+                throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+            }
+            return k;
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+        }
+    }
 
     public char desplaçar(char c, int desplaçament) {
         for (int i = 0; i < minuscules.length; i++) {
@@ -33,55 +48,27 @@ public class XifradorRotX {
         }
         return c;
     }
-    public String xifraRotX(String cadena, int desplaçament) {
+
+    @Override
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada {
+        int k = validaClau(clau);
+        if (msg == null) return null;
+        char[] caracters = new char[msg.length()];
+        for (int i = 0; i < msg.length(); i++) {
+            caracters[i] = desplaçar(msg.charAt(i), k);
+        }
+        return new TextXifrat(new String(caracters).getBytes());
+    }
+
+    @Override
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada {
+        int k = validaClau(clau);
+        if (xifrat == null) return null;
+        String cadena = new String(xifrat.getBytes());
         char[] caracters = new char[cadena.length()];
         for (int i = 0; i < cadena.length(); i++) {
-            caracters[i] = desplaçar(cadena.charAt(i), desplaçament);
+            caracters[i] = desplaçar(cadena.charAt(i), -k);
         }
         return new String(caracters);
     }
-    public String desxifraRotX(String cadena, int desplaçament) {
-        char[] caracters = new char[cadena.length()];
-        for (int i = 0; i < cadena.length(); i++) {
-            caracters[i] = desplaçar(cadena.charAt(i), -desplaçament);
-        }
-        return new String(caracters);
-    }
-
-    public void forçaBrutaRotX(String cadenaXifrada) {
-        System.out.println("\nMissatge xifrat: " + cadenaXifrada);
-        System.out.println("---------");
-        for (int i = 1; i < minuscules.length; i++) {
-            System.out.println("(" + i + ") " + desxifraRotX(cadenaXifrada, i));
-        }
-    }
-    public void main(String[] args) {
-        String[] proves = {
-            "ABC",
-            "XYZ",
-            "Hola, Mr. calçot",
-            "Perdó, per tu què és?"
-        };
-        int[] desplaçaments = {0, 2, 4, 6};
-
-        System.out.println("Xifrat");
-        System.out.println("---------");
-        for (int i = 0; i < proves.length; i++) {
-            String p = proves[i];
-            int desp = desplaçaments[i];
-            System.out.println("(" + desp + ")-" + p + " => " + xifraRotX(p, desp));
-        }
-        
-        System.out.println("\nDesxifrat");
-        System.out.println("---------");
-        for (int i = 0; i < proves.length; i++) {
-            String p = proves[i];
-            int desp = desplaçaments[i];
-            String xifrat = xifraRotX(p, desp);
-            System.out.println("(" + desp + ")" + xifrat + " => " + desxifraRotX(xifrat, desp));
-        }
-        forçaBrutaRotX(xifraRotX("Perdó, per tu què és?", 6));
-
-    }
- 
 }

@@ -1,57 +1,39 @@
 package iticbcn.xifratge;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-public class XifradorMonoalfabetic {
+public class XifradorMonoalfabetic  implements Xifrador{
     public char[] alfabet = {'A', 'Á', 'À', 'B', 'C', 'Ç', 'D', 'E', 'É', 'È', 
     'F', 'G', 'H', 'I', 'Í', 'Ì', 'Ï', 'J', 'K', 'L', 
     'M', 'N', 'Ñ', 'O', 'Ó', 'Ò', 'P', 'Q', 'R', 'S', 
     'T', 'U', 'Ú', 'Ù', 'Ü', 'V', 'W', 'X', 'Y', 'Z'};
     public char[] alfabetpermutat;
 
-    public void main(String[] args) {
-        alfabetpermutat = permutarAlfabet(alfabet);
-        String[] proves = {
-            "Test 01 àrbitre, coixí, Perímetre",
-            "Test 02 Taüll, DÍA, año",
-            "Test 03 Peça, Órrius, Bòvilla"
-        };
-        for (int i = 0; i < alfabet.length; i++) {
-            System.out.print(alfabet[i]);
-        }
-        System.out.println();
-        for (int i = 0; i < alfabetpermutat.length; i++) {
-            System.out.print(alfabetpermutat[i]);
-        }
-        System.out.println();
-        System.out.println("Xifratge\n");
-        for (String prova : proves) {
-           System.out.printf("%s -> %s%n", prova, xifraMonoAlfa(prova)); 
-        }
-        System.out.println("Desxifratge:\n");
-        for (String prova : proves) {
-            System.out.printf("%s -> %s%n", xifraMonoAlfa(prova), desxifraMonoAlfa(xifraMonoAlfa(prova)));
-        }
-    }
 
-    public char[] permutarAlfabet(char[] alfabet) {
-        ArrayList<Character> llista = new ArrayList<>();
-        for (int i = 0; i < alfabet.length; i++) {
-            llista.add(alfabet[i]);
+    public XifradorMonoalfabetic() {
+        List<Character> llista = new ArrayList<>();
+        for (char c : alfabet) {
+            llista.add(c);
         }
         Collections.shuffle(llista);
-        char[] permutat = new char[alfabet.length];
+        alfabetpermutat = new char[llista.size()];
         for (int i = 0; i < llista.size(); i++) {
-            permutat[i] = llista.get(i);
+            alfabetpermutat[i] = llista.get(i);
         }
-        return permutat;
     }
     
 
-    public String xifraMonoAlfa(String missatge) {
+    @Override
+    public TextXifrat xifra(String msg, String clau) throws ClauNoSuportada {
+        if (clau != null) {
+            throw new ClauNoSuportada("Xifratxe monoalfabètic no suporta clau != null");
+        }
+        if (msg == null) return null;
+
         StringBuilder resultat = new StringBuilder();
-        for (int i = 0; i < missatge.length(); i++) {
-            char lletraOriginal = missatge.charAt(i);
+        for (int i = 0; i < msg.length(); i++) {
+            char lletraOriginal = msg.charAt(i);
             boolean esMinuscula = Character.isLowerCase(lletraOriginal);
             char lletraMajuscula = Character.toUpperCase(lletraOriginal);
             boolean trobada = false;
@@ -70,10 +52,17 @@ public class XifradorMonoalfabetic {
                 resultat.append(lletraOriginal);
             }
         }
-       return resultat.toString();
+        return new TextXifrat(resultat.toString().getBytes());
     }
 
-    public String desxifraMonoAlfa(String missatge) {
+    @Override
+    public String desxifra(TextXifrat xifrat, String clau) throws ClauNoSuportada {
+        if (clau != null) {
+            throw new ClauNoSuportada("Xifratxe monoalfabètic no suporta clau != null");
+        }
+        if (xifrat == null) return null;
+
+        String missatge = new String(xifrat.getBytes());
         StringBuilder resultat = new StringBuilder();
         for (int i = 0; i < missatge.length(); i++) {
             char lletraXifrada = missatge.charAt(i);
@@ -81,7 +70,7 @@ public class XifradorMonoalfabetic {
             char lletraMajuscula = Character.toUpperCase(lletraXifrada);
             boolean trobada = false;
             for (int j = 0; j < alfabetpermutat.length; j++) {
-                if (lletraMajuscula == alfabet[j]) {
+                if (lletraMajuscula == alfabetpermutat[j]) {
                     char lletraOriginal = alfabet[j];
                     if (esMinuscula) {
                         lletraOriginal = Character.toLowerCase(lletraOriginal);
