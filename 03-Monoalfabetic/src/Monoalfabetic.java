@@ -80,7 +80,7 @@ public class Monoalfabetic {
             char lletraMajuscula = Character.toUpperCase(lletraXifrada);
             boolean trobada = false;
             for (int j = 0; j < alfabetpermutat.length; j++) {
-                if (lletraMajuscula == alfabet[j]) {
+                if (lletraMajuscula == alfabetpermutat[j]) {
                     char lletraOriginal = alfabet[j];
                     if (esMinuscula) {
                         lletraOriginal = Character.toLowerCase(lletraOriginal);
@@ -96,5 +96,4 @@ public class Monoalfabetic {
         }
         return resultat.toString();
     }
-    
 }
